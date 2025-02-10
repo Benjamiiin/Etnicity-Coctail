@@ -1,2 +1,2 @@
 # Etnicity-Coctail
-Prediction/Forecasting using Chronos and Chronos_Bolt
+Prediction and Time Series Forecasting using Chronos and Chronos_Bolt
