@@ -118,6 +118,24 @@ print(f" Default Forecast  → MAE: {mae_default:.2f}, RMSE: {rmse_default:.2f},
 print(f" Adaptive Forecast → MAE: {mae_adaptive:.2f}, RMSE: {rmse_adaptive:.2f}, Coverage: {coverage_adaptive:.2%}")
 
 # --------------------------------------------------------------------------------------------
+# --------------------------------------------------------------------------------------------
+# feature2 Detects anomalies where forecast errors exceed 'threshold' standard deviations.
+
+def detect_anomalies(actual, forecast, threshold=2.5):
+    """
+    Detects anomalies where forecast errors exceed 'threshold' standard deviations.
+    """
+    errors = np.abs(actual - forecast)
+    mean_error = np.mean(errors)
+    std_error = np.std(errors)
+    
+    anomalies = (errors > mean_error + threshold * std_error)  # Boolean mask
+    return anomalies
+
+# Detect anomalies
+anomaly_mask = detect_anomalies(actual_values, forecast_adaptive_np)
+
+# --------------------------------------------------------------------------------------------
 #  Plot Forecast Comparison
 # --------------------------------------------------------------------------------------------
 forecast_index = range(len(df) - PREDICTION_HORIZON, len(df))
@@ -133,11 +151,17 @@ plt.fill_between(forecast_index, low_default, high_default, color="tomato", alph
 plt.plot(forecast_index, forecast_adaptive_np, color="green", linestyle="dashed", label="Adaptive Forecast")
 plt.fill_between(forecast_index, low_adaptive, high_adaptive, color="green", alpha=0.2, label="Adaptive 80% Prediction Interval")
 
+plt.scatter(
+    np.array(forecast_index)[anomaly_mask], 
+    forecast_adaptive_np[anomaly_mask], 
+    color="red", 
+    label="Anomalies", 
+    zorder=3
+)
 plt.legend()
 plt.grid()
 plt.title("Chronos Forecasting: Default vs Adaptive Context Length with Uncertainty Estimation")
 plt.show()
-
 
 
 
