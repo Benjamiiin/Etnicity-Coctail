@@ -10,29 +10,13 @@ from sklearn.metrics import mean_absolute_error, mean_squared_error
 PREDICTION_HORIZON = 36
 
 #  Feature 1: Dynamically determines the best context length based on autocorrelation
-   """
-    Dynamically determines the optimal context length for forecasting 
-    by analyzing the autocorrelation function (ACF) of the time series. 
-    This function helps in selecting the most relevant historical data 
-    to use as input for the model, preventing overfitting on irrelevant 
-    past data while ensuring seasonal patterns are captured.
-    ------
-    - The function uses the first lag where ACF > 0.5 as an indicator of seasonality.
-    - If no significant seasonal lag is found, it defaults to `max_lag`.
-    - The chosen length ensures that at least two full seasonal cycles are considered.
-    """
 def find_optimal_context_length(time_series, max_lag=48):
     acf_values = acf(time_series, nlags=max_lag)
-    # Find the first lag where autocorrelation is significant (> 0.5)
-    significant_lags = np.where(acf_values > 0.5)[0]
-    if len(significant_lags) > 0:
-        seasonality = significant_lags[0]  # Use first detected cycle
-    else:
+    seasonality = np.argmax(acf_values > 0.5)  # Find highest correlation lag
+    if seasonality == 0:
         seasonality = max_lag  # Default to max lag if no seasonality is found
-    # Use 2 full cycles or the full series length
-    optimal_length = min(len(time_series), seasonality * 2)
+    optimal_length = min(len(time_series), seasonality * 2)  # Use 2 full cycles
     print(f"Selected optimal context length: {optimal_length}")
-
     return optimal_length
 
 
