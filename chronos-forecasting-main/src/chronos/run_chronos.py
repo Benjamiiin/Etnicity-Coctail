@@ -159,5 +159,4 @@ plt.show()
 # print("Extracted Embeddings:", embeddings.shape)
 #===================================================================================
 
-print("Extracted Embeddings:", embeddings.shape)
 
